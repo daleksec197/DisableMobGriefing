@@ -3,7 +3,7 @@ plugins {
 }
 
 group = 'org.loyal0713'
-version = '1.0.0-1.12.2'
+version = '1.0.0'
 
 repositories {
     mavenCentral()
