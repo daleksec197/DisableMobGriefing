@@ -2,7 +2,7 @@ name: DisableMobGriefing
 version: '${version}'
 main: org.loyal0713.disablemobgriefing.DisableMobGriefing
 authors: [Loyal0713]
-api-version: '1.12'
+api-version: '1.20'
 description: Mod that allows for disabling mob griefing per mob instead of one global setting
 
 commands:
