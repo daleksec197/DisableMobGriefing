@@ -23,23 +23,37 @@ public class CommandManager implements CommandExecutor {
 
             String entityName = args[0];
             boolean isInConfig = DisableMobGriefing.config.contains(entityName + "_griefing");
-
+            /*
             if(!isInConfig) {
                 sender.sendMessage(entityName + " is not a valid entity.");
                 return success;
-            }
+            }*/
 
             if(args.length == 1) {
-                boolean allowedToGrief = DisableMobGriefing.config.getBoolean(entityName + "_griefing");
-                sender.sendMessage(entityName + " griefing is " + (allowedToGrief ? "enabled" : "disabled"));
-                success = true;
+                if(isInConfig){
+                    boolean allowedToGrief = DisableMobGriefing.config.getBoolean(entityName + "_griefing");
+                    sender.sendMessage(entityName + " griefing is " + (allowedToGrief ? "enabled" : "disabled"));
+                    success = true;
+                }
+                else{
+                    sender.sendMessage(entityName + " is not a valid entity.");
+                    return success;
+                }
             }
 
             if(args.length == 2) {
                 boolean allowedToGrief = Boolean.parseBoolean(args[1]);
-                DisableMobGriefing.config.set(entityName + "_griefing", allowedToGrief);
-                DisableMobGriefing.config.options().copyDefaults(true);
-                success = true;
+                if(isInConfig) {
+                    DisableMobGriefing.config.set(entityName + "_griefing", allowedToGrief);
+                    DisableMobGriefing.config.options().copyDefaults(true);
+                    success = true;
+                }
+                else{
+                    DisableMobGriefing.config.addDefault(entityName + "_griefing", allowedToGrief);
+                    DisableMobGriefing.config.options().copyDefaults(true);
+                    sender.sendMessage(entityName + " is now added to config.");
+                    return success;
+                }
             }
         }
         return success;

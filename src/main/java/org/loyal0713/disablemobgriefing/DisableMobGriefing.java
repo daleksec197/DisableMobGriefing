@@ -1,6 +1,8 @@
 package org.loyal0713.disablemobgriefing;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameRule;
+import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
@@ -8,6 +10,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.List;
+import java.util.Objects;
 
 public final class DisableMobGriefing extends JavaPlugin implements Listener {
 
@@ -40,23 +45,31 @@ public final class DisableMobGriefing extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(this, this);
 
         // register command
-        this.getCommand("mobgriefing").setExecutor(new CommandManager());
+        Objects.requireNonNull(this.getCommand("mobgriefing")).setExecutor(new CommandManager());
     }
 
+    private boolean isNotAllowedToGrief(EntityType entityType, boolean gameRuleValue) {
+        boolean ruleExists = config.contains(entityType.toString().toLowerCase()+"_griefing");
+        boolean allowedToGrief = ruleExists ? config.getBoolean(entityType.toString().toLowerCase() + "_griefing") : gameRuleValue; //use GameRule instead if no config exists
+        boolean isVerbose = config.getBoolean("verbose");
+        if (!allowedToGrief) {
+            if (isVerbose) {
+                getLogger().info(entityType + " griefing is disabled.");
+            }
+        }
+        return !allowedToGrief;
+    }
     /*
     Most mobs that can grief are handled here.
      */
     @EventHandler
     public void onEntityChangeBlock(EntityChangeBlockEvent event) {
         EntityType entityType = event.getEntityType();
-        boolean allowedToGrief = config.getBoolean(entityType.toString().toLowerCase() + "_griefing");
-        boolean isVerbose = config.getBoolean("verbose");
-        if (!allowedToGrief) {
-            if (isVerbose) {
-                getLogger().info(entityType + " griefing is disabled.");
-            }
+        World world = event.getBlock().getWorld();
+        boolean gameRuleValue = Boolean.TRUE.equals(world.getGameRuleValue(GameRule.MOB_GRIEFING));
+
+        if (isNotAllowedToGrief(entityType, gameRuleValue))
             event.setCancelled(true);
-        }
     }
 
     /*
@@ -65,14 +78,12 @@ public final class DisableMobGriefing extends JavaPlugin implements Listener {
     @EventHandler
     public void onEntityExplode(EntityExplodeEvent event) {
         EntityType entityType = event.getEntityType();
-        boolean allowedToGrief = config.getBoolean(entityType.toString().toLowerCase() + "_griefing");
-        boolean isVerbose = config.getBoolean("verbose");
-        if (!allowedToGrief) {
-            if (isVerbose) {
-                getLogger().info(entityType + " griefing is disabled.");
-            }
+        World world = event.getEntity().getWorld();
+        boolean gameRuleValue = Boolean.TRUE.equals(world.getGameRuleValue(GameRule.MOB_GRIEFING));
+
+        if (isNotAllowedToGrief(entityType,gameRuleValue))
             event.setCancelled(true);
-        }
+
     }
 
     @Override
