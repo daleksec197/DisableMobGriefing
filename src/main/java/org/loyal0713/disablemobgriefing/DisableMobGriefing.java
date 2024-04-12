@@ -48,9 +48,9 @@ public final class DisableMobGriefing extends JavaPlugin implements Listener {
         Objects.requireNonNull(this.getCommand("mobgriefing")).setExecutor(new CommandManager());
     }
 
-    private boolean isNotAllowedToGrief(EntityType entityType, boolean gameRuleValue) {
+    private boolean isNotAllowedToGrief(EntityType entityType) {
         boolean ruleExists = config.contains(entityType.toString().toLowerCase()+"_griefing");
-        boolean allowedToGrief = ruleExists ? config.getBoolean(entityType.toString().toLowerCase() + "_griefing") : gameRuleValue; //use GameRule instead if no config exists
+        boolean allowedToGrief = !ruleExists || config.getBoolean(entityType.toString().toLowerCase() + "_griefing"); //better in performance than using gamerule and effect will be the same. events don't get triggered when gamerule is false.
         boolean isVerbose = config.getBoolean("verbose");
         if (!allowedToGrief) {
             if (isVerbose) {
@@ -65,10 +65,8 @@ public final class DisableMobGriefing extends JavaPlugin implements Listener {
     @EventHandler
     public void onEntityChangeBlock(EntityChangeBlockEvent event) {
         EntityType entityType = event.getEntityType();
-        World world = event.getBlock().getWorld();
-        boolean gameRuleValue = Boolean.TRUE.equals(world.getGameRuleValue(GameRule.MOB_GRIEFING));
 
-        if (isNotAllowedToGrief(entityType, gameRuleValue))
+        if (isNotAllowedToGrief(entityType))
             event.setCancelled(true);
     }
 
@@ -78,10 +76,8 @@ public final class DisableMobGriefing extends JavaPlugin implements Listener {
     @EventHandler
     public void onEntityExplode(EntityExplodeEvent event) {
         EntityType entityType = event.getEntityType();
-        World world = event.getEntity().getWorld();
-        boolean gameRuleValue = Boolean.TRUE.equals(world.getGameRuleValue(GameRule.MOB_GRIEFING));
 
-        if (isNotAllowedToGrief(entityType,gameRuleValue))
+        if (isNotAllowedToGrief(entityType))
             event.blockList().clear();
     }
 

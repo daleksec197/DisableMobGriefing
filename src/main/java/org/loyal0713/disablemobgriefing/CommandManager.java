@@ -46,6 +46,7 @@ public class CommandManager implements CommandExecutor {
                 if(isInConfig) {
                     DisableMobGriefing.config.set(entityName + "_griefing", allowedToGrief);
                     DisableMobGriefing.config.options().copyDefaults(true);
+                    sender.sendMessage(entityName + " griefing is now " + (allowedToGrief ? "enabled" : "disabled"));
                     success = true;
                 }
                 else{
