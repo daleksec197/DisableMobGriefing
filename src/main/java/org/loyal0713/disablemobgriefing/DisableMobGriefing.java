@@ -82,8 +82,7 @@ public final class DisableMobGriefing extends JavaPlugin implements Listener {
         boolean gameRuleValue = Boolean.TRUE.equals(world.getGameRuleValue(GameRule.MOB_GRIEFING));
 
         if (isNotAllowedToGrief(entityType,gameRuleValue))
-            event.setCancelled(true);
-
+            event.blockList().clear();
     }
 
     @Override

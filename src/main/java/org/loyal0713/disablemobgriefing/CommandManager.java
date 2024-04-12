@@ -52,7 +52,7 @@ public class CommandManager implements CommandExecutor {
                     DisableMobGriefing.config.addDefault(entityName + "_griefing", allowedToGrief);
                     DisableMobGriefing.config.options().copyDefaults(true);
                     sender.sendMessage(entityName + " is now added to config.");
-                    return success;
+                    success = true;
                 }
             }
         }
